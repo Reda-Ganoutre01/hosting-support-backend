@@ -1,4 +1,4 @@
-package hosting_support_backend;
+package hosting_support_backend.entity;
 
 
 import jakarta.persistence.Entity;
