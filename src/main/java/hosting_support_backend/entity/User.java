@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
-
+import java.util.List;
 
 
 @Entity
@@ -36,4 +36,13 @@ public class User {
     Boolean enabled;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
+
+
+    @OneToMany (mappedBy = "user")
+    List<HostingAccount> hostingAccounts;
+
+    @OneToMany (mappedBy = "notification")
+
+
+
 }
