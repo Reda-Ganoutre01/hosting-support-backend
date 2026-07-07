@@ -15,15 +15,18 @@ public class HostingPlan {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    long id;
+    private long id;
 
     @Column (nullable = false)
-    String name;
-    String description;
+    private String name;
+
+    @Column(length =  2000)
+    private String description;
+    
     @Column (nullable = false)
-    Double price;
-    Integer storage;
-    Integer bandwidth;
-    Integer emailAccounts;
-    Boolean sslIncluded;
+    private Double price;
+    private Integer storage;
+    private Integer bandwidth;
+    private Integer emailAccounts;
+    private Boolean sslIncluded;
 }
