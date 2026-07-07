@@ -1,15 +1,56 @@
 package hosting_support_backend.entity;
 
-
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @Entity
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+@Table(name = "notifications")
 public class Notification {
-    Long id;
-    String title;
-    String message;
-    Boolean read;
-    LocalDateTime createdAt;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
+  private String title;
+
+  @Column(length = 4000,nullable = false)
+
+
+  private String message;
+  private Boolean read;
+  private LocalDateTime createdAt;
+
+  // @ManyToOne(fetch = FetchType.LAZY)
+  //   @JoinColumn(name = "user_id", nullable = false)
+  //   private User user;
+
+  //   @ManyToOne(fetch = FetchType.LAZY)
+  //   @JoinColumn(name = "hosting_account_id")
+  //   private HostingAccount hostingAccount;
+
+  //   @PrePersist
+  //   public void prePersist() {
+  //       this.createdAt = LocalDateTime.now();
+  //       if (this.read == null) {
+  //           this.read = false;
+  //       }
+  //   }
 }
