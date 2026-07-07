@@ -1,10 +1,20 @@
 package hosting_support_backend.entity;
 
 
-import jakarta.persistence.Entity;
+import jakarta.persistence.*;
+import lombok.*;
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@Table(name = "hosting_plans")
 public class HostingPlan {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
     String name;
     String description;
