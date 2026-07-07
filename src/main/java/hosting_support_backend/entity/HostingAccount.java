@@ -18,11 +18,24 @@ import java.time.LocalDate;
 public class HostingAccount {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
     @Column(nullable = false)
-    String domainName;
-    HostingStatus status;
-    LocalDate startDate;
-    LocalDate expirationDate;
+    private String domainName;
+
+    @Enumerated(EnumType.STRING)
+    private HostingStatus status;
+    private LocalDate startDate;
+    private LocalDate expirationDate;
+
+//      @ManyToOne(fetch = FetchType.LAZY)
+//     @JoinColumn(name = "user_id", nullable = false)
+//     private User user;
+
+//     @ManyToOne(fetch = FetchType.LAZY)
+//     @JoinColumn(name = "hosting_plan_id", nullable = false)
+//     private HostingPlan hostingPlan;
+
+//     @OneToMany(mappedBy = "hostingAccount", cascade = CascadeType.ALL, orphanRemoval = true)
+//     private List<Notification> notifications;
 }
