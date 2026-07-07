@@ -3,6 +3,7 @@ package hosting_support_backend.entity;
 import hosting_support_backend.entity.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -18,20 +19,24 @@ import java.util.List;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    long id;
+    private long id;
 
     String firstName;
 
     String lastName;
-    @Column(unique = true)
+    @Column(unique = true,nullable = false)
     String email;
 
+    @Column(nullable = false)
     String password;
 
     String phone;
 
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+            @ColumnDefault("'USER'")
+
     Role role;
     Boolean enabled;
     LocalDateTime createdAt;
