@@ -21,32 +21,32 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    String firstName;
+    private String firstName;
 
-    String lastName;
+    private String lastName;
     @Column(unique = true,nullable = false)
-    String email;
+    private String email;
 
     @Column(nullable = false)
-    String password;
+    private String password;
 
-    String phone;
+    private String phone;
 
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-            @ColumnDefault("'USER'")
+    @ColumnDefault("'USER'")
 
-    Role role;
-    Boolean enabled;
-    LocalDateTime createdAt;
-    LocalDateTime updatedAt;
+    private Role role;
+    private Boolean enabled;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
 
     @OneToMany (mappedBy = "user")
     List<HostingAccount> hostingAccounts;
 
-    @OneToMany (mappedBy = "notification")
+    // @OneToMany (mappedBy = "notification")
 
 
 

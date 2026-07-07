@@ -13,15 +13,21 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Table ( name = 'tickets')
+@Table(name = "tickets")
 public class Ticket {
 
-    @Id
-            @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
-    String subject;
-    String description;
-    TicketStatus status;
-    Priority priority;
-    LocalDateTime createdAt;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
+  private String subject;
+
+  @Column (length=200)
+  private String description;
+
+  @Enumerated(EnumType.STRING)
+  private TicketStatus status;
+
+  @Enumerated(EnumType.STRING)
+  private Priority priority;
+  private LocalDateTime createdAt;
 }

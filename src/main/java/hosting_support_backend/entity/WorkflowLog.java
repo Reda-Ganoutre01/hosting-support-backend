@@ -1,6 +1,5 @@
 package hosting_support_backend.entity;
 
-
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -12,19 +11,17 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table( name ="workflow_logs")
+@Table(name = "workflow_logs")
 
 public class WorkflowLog {
-    @Id
-            @GeneratedValue( strategy = GenerationType.IDENTITY)
-    long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private long id;
 
-    @Column (nullable = false)
-    String workflowName;
+  @Column(nullable = false)
+  private String workflowName;
 
-    @Column (nullable = false)
-    String executionStatus;
-
-    @Column(nullable = false)
-    LocalDateTime executionDate;
+  @Column(nullable = false)
+  private String executionStatus;
+  private LocalDateTime executionDate;
 }
