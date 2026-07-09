@@ -44,12 +44,16 @@ public class Message {
 
     private LocalDateTime sendAt;
 
-    // @ManyToOne(fetch = FetchType.LAZY)
-    // @JoinColumn(name = "ticket_id", nullable = false)
-    // private Ticket ticket;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ticket_id", nullable = false)
+    private Ticket ticket;
 
-    // @PrePersist
-    // public void prePersist() {
-    //     this.sentAt = LocalDateTime.now();
-    // }
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @PrePersist
+    public void prePersist() {
+        this.sendAt = LocalDateTime.now();
+    }
 }
