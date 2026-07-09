@@ -38,19 +38,19 @@ public class Notification {
   private Boolean read;
   private LocalDateTime createdAt;
 
-  // @ManyToOne(fetch = FetchType.LAZY)
-  //   @JoinColumn(name = "user_id", nullable = false)
-  //   private User user;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "user_id", nullable = false)
+  private User user;
 
-  //   @ManyToOne(fetch = FetchType.LAZY)
-  //   @JoinColumn(name = "hosting_account_id")
-  //   private HostingAccount hostingAccount;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "hosting_account_id")
+  private HostingAccount hostingAccount;
 
-  //   @PrePersist
-  //   public void prePersist() {
-  //       this.createdAt = LocalDateTime.now();
-  //       if (this.read == null) {
-  //           this.read = false;
-  //       }
-  //   }
+  @PrePersist
+  public void prePersist() {
+      this.createdAt = LocalDateTime.now();
+      if (this.read == null) {
+          this.read = false;
+      }
+  }
 }
