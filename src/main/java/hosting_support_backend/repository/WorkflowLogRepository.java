@@ -10,5 +10,5 @@ import java.util.List;
 @Repository
 public interface WorkflowLogRepository extends JpaRepository<WorkflowLog,Long> {
     List<WorkflowLog> findByExecutionStatus(String executionStatus);
-    List <WorkflowLog> findByWorkFlowName (String workflowName);
+    List<WorkflowLog> findByWorkflowName(String workflowName);
 }
