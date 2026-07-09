@@ -43,28 +43,28 @@ public class User {
     private LocalDateTime updatedAt;
 
 
-    // @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    // private List<Ticket> tickets;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Ticket> tickets;
 
-    // @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    // private List<HostingAccount> hostingAccounts;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<HostingAccount> hostingAccounts;
 
-    // @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    // private List<Notification> notifications;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Notification> notifications;
 
-    // @PrePersist
-    // public void prePersist() {
-    //     this.createdAt = LocalDateTime.now();
-    //     this.updatedAt = LocalDateTime.now();
-    //     if (this.enabled == null) {
-    //         this.enabled = true;
-    //     }
-    // }
+    @PrePersist
+    public void prePersist() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+        if (this.enabled == null) {
+            this.enabled = true;
+        }
+    }
 
-    // @PreUpdate
-    // public void preUpdate() {
-    //     this.updatedAt = LocalDateTime.now();
-    // }
+    @PreUpdate
+    public void preUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
 
 
 
