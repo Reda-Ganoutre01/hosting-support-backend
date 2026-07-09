@@ -28,14 +28,14 @@ public class HostingAccount {
     private LocalDate startDate;
     private LocalDate expirationDate;
 
-//      @ManyToOne(fetch = FetchType.LAZY)
-//     @JoinColumn(name = "user_id", nullable = false)
-//     private User user;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
-//     @ManyToOne(fetch = FetchType.LAZY)
-//     @JoinColumn(name = "hosting_plan_id", nullable = false)
-//     private HostingPlan hostingPlan;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "hosting_plan_id", nullable = false)
+    private HostingPlan hostingPlan;
 
-//     @OneToMany(mappedBy = "hostingAccount", cascade = CascadeType.ALL, orphanRemoval = true)
-//     private List<Notification> notifications;
+    @OneToMany(mappedBy = "hostingAccount", cascade = CascadeType.ALL, orphanRemoval = true)
+    private java.util.List<Notification> notifications;
 }
