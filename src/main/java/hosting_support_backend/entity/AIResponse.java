@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 public class  AIResponse {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private long id;
+  private Long id;
 
   @Column (length= 4000)
   private String prompt;
@@ -30,20 +30,20 @@ public class  AIResponse {
   private Double confidenceScore;
   private LocalDateTime generatedAt;
 
-//  @OneToOne
-//  @JoinColumn(name = "ticket_id", nullable = false, unique = true)
-//  private Ticket ticket;
-//
-//  @OneToOne
-//  @JoinColumn(name = "workflow_log_id")
-//  private WorkflowLog workflowLog;
-//
-//  @OneToOne
-//  @JoinColumn(name = "faq_id")
-//  private FAQ faq;
-//
-//  @PrePersist
-//  public void prePersist() {
-//    this.generatedAt = LocalDateTime.now();
-//  }
+  @OneToOne
+  @JoinColumn(name = "ticket_id", nullable = false, unique = true)
+  private Ticket ticket;
+
+  @OneToOne
+  @JoinColumn(name = "workflow_log_id")
+  private WorkflowLog workflowLog;
+
+  @OneToOne
+  @JoinColumn(name = "faq_id")
+  private FAQ faq;
+
+  @PrePersist
+  public void prePersist() {
+    if (this.generatedAt == null) this.generatedAt = LocalDateTime.now();
+  }
 }
