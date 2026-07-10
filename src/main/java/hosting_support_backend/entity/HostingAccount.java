@@ -1,6 +1,7 @@
 package hosting_support_backend.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import hosting_support_backend.entity.enums.HostingStatus;
 import jakarta.persistence.*;
 import lombok.*;
@@ -30,6 +31,7 @@ public class HostingAccount {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnoreProperties({"tickets", "hostingAccounts", "notifications"})
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)

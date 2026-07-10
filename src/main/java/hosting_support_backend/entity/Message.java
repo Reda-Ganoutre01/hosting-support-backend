@@ -1,6 +1,7 @@
 package hosting_support_backend.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import hosting_support_backend.entity.enums.SenderType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -46,10 +47,12 @@ public class Message {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ticket_id", nullable = false)
+    @JsonIgnoreProperties({"messages", "aiResponse", "user"})
     private Ticket ticket;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
+    @JsonIgnoreProperties({"tickets", "hostingAccounts", "notifications"})
     private User user;
 
     @PrePersist

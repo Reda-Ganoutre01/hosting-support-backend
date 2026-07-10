@@ -1,5 +1,6 @@
 package hosting_support_backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -41,10 +42,12 @@ public class Notification {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id", nullable = false)
+  @JsonIgnoreProperties({"tickets", "hostingAccounts", "notifications"})
   private User user;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "hosting_account_id")
+  @JsonIgnoreProperties({"notifications", "user"})
   private HostingAccount hostingAccount;
 
   @PrePersist

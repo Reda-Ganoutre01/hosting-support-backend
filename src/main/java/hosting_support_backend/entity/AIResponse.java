@@ -1,5 +1,6 @@
 package hosting_support_backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -32,6 +33,7 @@ public class  AIResponse {
 
   @OneToOne
   @JoinColumn(name = "ticket_id", nullable = false, unique = true)
+  @JsonIgnoreProperties({"aiResponse", "messages", "user"})
   private Ticket ticket;
 
   @OneToOne
