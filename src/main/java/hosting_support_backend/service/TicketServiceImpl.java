@@ -67,10 +67,9 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     public List<Ticket> getByUserId(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
-        return ticketRepository.findAll().stream()
-                .filter(t -> t.getUser().getId().equals(userId))
-                .toList();
+        if (!userRepository.existsById(userId)) {
+            throw new RuntimeException("User not found with id: " + userId);
+        }
+        return ticketRepository.findByUserId(userId);
     }
 }
