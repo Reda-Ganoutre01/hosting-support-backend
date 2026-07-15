@@ -70,12 +70,11 @@ public class NotificationServiceImpl implements NotificationService {
         return notificationRepository.findAll();
     }
 
-    @Override
-    public List<Notification> getByUserId(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
-        return notificationRepository.findAll().stream()
-                .filter(n -> n.getUser().getId().equals(userId))
-                .toList();
+   @Override
+public List<Notification> getByUserId(Long userId) {
+    if (!userRepository.existsById(userId)) {
+        throw new RuntimeException("User not found with id: " + userId);
     }
+    return notificationRepository.findByUserId(userId);
+}
 }
