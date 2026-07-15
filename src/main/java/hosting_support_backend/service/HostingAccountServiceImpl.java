@@ -72,12 +72,11 @@ public class HostingAccountServiceImpl implements HostingAccountService {
         return hostingAccountRepository.findAll();
     }
 
-    @Override
-    public List<HostingAccount> getByUserId(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
-        return hostingAccountRepository.findAll().stream()
-                .filter(ha -> ha.getUser().getId().equals(userId))
-                .toList();
+   @Override
+public List<HostingAccount> getByUserId(Long userId) {
+    if (!userRepository.existsById(userId)) {
+        throw new RuntimeException("User not found with id: " + userId);
     }
+    return hostingAccountRepository.findByUserId(userId);
+}
 }

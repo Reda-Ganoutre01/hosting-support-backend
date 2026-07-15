@@ -15,4 +15,6 @@ public interface HostingAccountRepository extends JpaRepository<HostingAccount,L
     List<HostingAccount> findByStatus(HostingStatus status);
     Optional<HostingAccount> findByDomainName(String domainName);
     boolean existsByDomainName(String domainName);
+
+
 }
