@@ -14,7 +14,8 @@ public class NotificationRequestDTO {
 
     @NotBlank
     private String message;
-
+    
+    private Boolean read;
     @NotNull
     private Long userId;
 
