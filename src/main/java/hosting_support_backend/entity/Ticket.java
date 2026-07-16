@@ -1,5 +1,6 @@
 package hosting_support_backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import hosting_support_backend.entity.enums.Priority;
 import hosting_support_backend.entity.enums.TicketStatus;
@@ -34,14 +35,15 @@ public class Ticket {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id", nullable = false)
-  @JsonIgnoreProperties({"tickets", "hostingAccounts", "notifications"})
+  @JsonIgnoreProperties({"tickets", "hostingAccounts", "notifications", "password"})
   private User user;
 
   @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true)
+  @JsonIgnore
   private java.util.List<Message> messages;
 
   @OneToOne(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true)
-  @JsonIgnoreProperties({"ticket"})
+  @JsonIgnore
   private AIResponse aiResponse;
 
   @PrePersist
