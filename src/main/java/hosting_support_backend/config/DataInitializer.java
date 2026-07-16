@@ -31,8 +31,8 @@ public class DataInitializer implements CommandLineRunner {
     if (userRepository.count() == 0) {
       user = userRepository.save(
           User.builder()
-              .firstName("Reda")
-              .lastName("Gantt")
+              .userName("redux")
+              .fullName("redux Gantt")
               .email("reda@gmail.com")
               .password("123456")
               .role(Role.USER)
