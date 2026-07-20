@@ -16,9 +16,13 @@ spring:
       hibernate:
         format_sql: true
 
+# application.yml - JWT configuration
+
 app:
   jwt:
+    # Base64-encoded secret key (use a strong random key in production)
     secret: ${JWT_SECRET:dGhpcyBpcyBhIHNlY3JldCBrZXkgZm9yIGp3dCB0b2tlbiBzaWduaW5n}
-    expiration: 86400000 # 24 hours
+    # Token expires after 24 hours
+    expiration-ms: 86400000
 server:
   port: 8080
