@@ -25,6 +25,7 @@ import hosting_support_backend.repository.UserRepository;
 import hosting_support_backend.repository.WorkflowLogRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,15 +47,15 @@ public class DataInitializer implements CommandLineRunner {
   private final AIResponseRepository aiResponseRepository;
   private final FAQRepository faqRepository;
   private final WorkflowLogRepository workflowLogRepository;
-  // private final PasswordEncoder passwordEncoder;
+  private final PasswordEncoder passwordEncoder;
 
   @Override
   public void run(String... args) {
     System.out.println("🟢 DataInitializer starting...");
 
-    String[] userNames = {"alex", "maria", "nina", "david", "julia", "omar", "liam", "sophia", "michael", "leah", "noah", "emma"};
-    String[] fullNames = {"Alex Johnson", "Maria Santos", "Nina Patel", "David Brown", "Julia Gray", "Omar Khalid", "Liam Carter", "Sophia Turner", "Michael Hall", "Leah Adams", "Noah Kim", "Emma Lopez"};
-    String[] emails = {"alex.johnson@example.com", "maria.santos@example.com", "nina.patel@example.com", "david.brown@example.com", "julia.gray@example.com", "omar.khalid@example.com", "liam.carter@example.com", "sophia.turner@example.com", "michael.hall@example.com", "leah.adams@example.com", "noah.kim@example.com", "emma.lopez@example.com"};
+    String[] userNames = {"reda", "maria", "nina", "david", "julia", "omar", "liam", "sophia", "michael", "leah", "noah", "emma"};
+    String[] fullNames = {"Reda", "Maria Santos", "Nina Patel", "David Brown", "Julia Gray", "Omar Khalid", "Liam Carter", "Sophia Turner", "Michael Hall", "Leah Adams", "Noah Kim", "Emma Lopez"};
+    String[] emails = {"reda@example.com", "maria.santos@example.com", "nina.patel@example.com", "david.brown@example.com", "julia.gray@example.com", "omar.khalid@example.com", "liam.carter@example.com", "sophia.turner@example.com", "michael.hall@example.com", "leah.adams@example.com", "noah.kim@example.com", "emma.lopez@example.com"};
     String[] phones = {"+1-202-555-0173", "+1-202-555-0114", "+1-202-555-0135", "+1-202-555-0186", "+1-202-555-0127", "+1-202-555-0198", "+1-202-555-0149", "+1-202-555-0150", "+1-202-555-0151", "+1-202-555-0152", "+1-202-555-0153", "+1-202-555-0154"};
     boolean[] enabledFlags = {true, true, false, true, true, false, true, true, true, false, true, true};
 
@@ -66,7 +67,7 @@ public class DataInitializer implements CommandLineRunner {
         user.setFullName(fullNames[i]);
         user.setEmail(emails[i]);
         user.setPhone(phones[i]);
-        user.setPassword("Pass@" + (1000 + i));
+        user.setPassword(passwordEncoder.encode(i == 0 ? "12345678" : "Pass@" + (1000 + i)));
         user.setRole(Role.USER);
         user.setEnabled(enabledFlags[i]);
       } else {
@@ -75,7 +76,7 @@ public class DataInitializer implements CommandLineRunner {
                 .fullName(fullNames[i])
                 .email(emails[i])
                 .phone(phones[i])
-                .password("Pass@" + (1000 + i))
+                .password(passwordEncoder.encode(i == 0 ? "12345678" : "Pass@" + (1000 + i)))
                 .role(Role.USER)
                 .enabled(enabledFlags[i])
                 .build());
