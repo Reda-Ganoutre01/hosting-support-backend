@@ -26,6 +26,7 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtFilter;
 
     public SecurityConfig(JwtAuthenticationFilter jwtFilter) {
+
         this.jwtFilter = jwtFilter;
     }
 
@@ -41,13 +42,14 @@ public class SecurityConfig {
                                 SessionCreationPolicy.STATELESS))
                 // Configure endpoint authorization
                 .authorizeHttpRequests(auth -> auth
-                        // Allow unauthenticated access to auth endpoints
                         .requestMatchers("/api/auth/**").permitAll()
-                        // Allow health check endpoints
                         .requestMatchers("/actuator/health/**").permitAll()
-                        // Admin endpoints require ADMIN role
+                        .requestMatchers(
+                                "/swagger-ui.html",
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**"
+                        ).permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        // All other endpoints require authentication
                         .anyRequest().authenticated()
                 )
                 // Add JWT filter before the standard auth filter
@@ -78,4 +80,6 @@ public class SecurityConfig {
             AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
+
+
 }
