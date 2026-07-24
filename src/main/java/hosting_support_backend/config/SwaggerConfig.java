@@ -25,7 +25,7 @@ public class SwaggerConfig {
     public Docket atividadeApi() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("hosting_support_backend.config))
+                .apis(RequestHandlerSelectors.basePackage("hosting_support_backend"))
                 .paths(regex("/api.*"))
                 .build()
                 .apiInfo(metaInfo());
