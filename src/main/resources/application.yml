@@ -25,12 +25,13 @@ app:
     # Token expires after 24 hours
     expiration-ms: 86400000
 server:
-  port: 8080
-
+  port: 8081
 
 springdoc:
   api-docs:
+    enabled: true
     path: /v3/api-docs
   swagger-ui:
-    path: /swagger-ui.html
+    enabled: true
+    path: /swagger-ui
     operationSorter: method
