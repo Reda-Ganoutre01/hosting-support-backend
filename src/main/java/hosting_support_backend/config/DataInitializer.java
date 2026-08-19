@@ -68,7 +68,7 @@ public class DataInitializer implements CommandLineRunner {
         user.setEmail(emails[i]);
         user.setPhone(phones[i]);
         user.setPassword(passwordEncoder.encode(i == 0 ? "12345678" : "Pass@" + (1000 + i)));
-        user.setRole(Role.USER);
+        user.setRole(i == 0 ? Role.ADMIN : Role.USER);
         user.setEnabled(enabledFlags[i]);
       } else {
         users.add(User.builder()
@@ -77,7 +77,7 @@ public class DataInitializer implements CommandLineRunner {
                 .email(emails[i])
                 .phone(phones[i])
                 .password(passwordEncoder.encode(i == 0 ? "12345678" : "Pass@" + (1000 + i)))
-                .role(Role.USER)
+                .role(i == 0 ? Role.ADMIN : Role.USER)
                 .enabled(enabledFlags[i])
                 .build());
       }
