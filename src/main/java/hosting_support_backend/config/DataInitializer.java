@@ -102,18 +102,29 @@ public class DataInitializer implements CommandLineRunner {
     Integer[] bandwidthValues = {200, 500, 1000, 1200, 1500, 2000, 2500, 300, 800, 1600, 2200, 400};
     Integer[] emailAccounts = {5, 10, 15, 20, 25, 30, 40, 8, 12, 18, 35, 6};
     Boolean[] sslIncluded = {true, true, false, true, true, true, true, false, true, true, true, false};
+    Double[] realPrices = {199.0, 399.0, 699.0, 999.0, 1299.0, 1699.0, 2499.0, 299.0, 899.0, 1499.0, 1999.0, 499.0};
 
     if (hostingPlanRepository.count() == 0) {
       for (int i = 0; i < 12; i++) {
         hostingPlanRepository.save(HostingPlan.builder()
                 .name(planNames[i])
                 .description(planDescriptions[i])
-                .price(4.99 + i * 2)
+                .price(realPrices[i])
                 .storage(storageValues[i])
                 .bandwidth(bandwidthValues[i])
                 .emailAccounts(emailAccounts[i])
                 .sslIncluded(sslIncluded[i])
                 .build());
+      }
+    } else {
+      // Auto-update existing dummy prices (< 100.0) in MySQL table to realistic values
+      List<HostingPlan> existingPlans = hostingPlanRepository.findAll();
+      for (int i = 0; i < existingPlans.size(); i++) {
+        HostingPlan p = existingPlans.get(i);
+        if (p.getPrice() == null || p.getPrice() < 100.0) {
+          p.setPrice(realPrices[i % realPrices.length]);
+          hostingPlanRepository.save(p);
+        }
       }
     }
     List<HostingPlan> plans = hostingPlanRepository.findAll();
