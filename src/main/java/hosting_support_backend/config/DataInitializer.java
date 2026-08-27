@@ -198,16 +198,52 @@ public class DataInitializer implements CommandLineRunner {
     }
     System.out.println("Messages count after seeding: " + messageRepository.count());
 
-    String[] faqQuestions = {"How can I upgrade my plan?", "How do I reset my password?", "Can I migrate my domain?", "What is included in SSL?", "How do I restore backups?", "How do I create email accounts?", "How do I check bandwidth?", "Can I use a custom domain?", "How do I open a support ticket?", "Can I connect a database?", "How do I enable CDN?", "How do I cancel my plan?"};
-    String[] faqAnswers = {"Go to the plan page and choose upgrade.", "Use the reset link on the login page.", "Yes, domain migration is available.", "SSL secures your website traffic.", "Use the backup restore tool in the dashboard.", "Go to the email section and add a mailbox.", "Check your usage metrics under analytics.", "Yes, add the domain in your dashboard.", "Click support and choose create ticket.", "Use the database tool to add your database.", "Enable CDN from the performance tab.", "Cancel your plan from the billing area."};
+    String[] faqQuestions = {
+      "Comment changer d'offre d'hébergement ?",
+      "Comment réinitialiser mon mot de passe ?",
+      "Puis-je migrer mon nom de domaine ?",
+      "Que comprend le certificat SSL inclus ?",
+      "Comment restaurer une sauvegarde ?",
+      "Comment créer un compte e-mail ?",
+      "Comment vérifier ma consommation de bande passante ?",
+      "Puis-je utiliser un nom de domaine personnalisé ?",
+      "Comment ouvrir un ticket de support ?",
+      "Puis-je connecter une base de données MySQL ?",
+      "Comment activer le CDN de mon site ?",
+      "Comment résilier mon offre d'hébergement ?"
+    };
+    String[] faqAnswers = {
+      "Rendez-vous dans la rubrique 'Formules d'Hébergement' de votre espace client et choisissez 'Changer de formule'.",
+      "Utilisez le lien 'Mot de passe oublié' présent sur la page de connexion.",
+      "Oui, la migration de nom de domaine est entièrement disponible et prise en charge.",
+      "Le certificat SSL sécurise l'ensemble du trafic web de votre domaine via un chiffrement HTTPS.",
+      "Accédez à l'outil de restauration des sauvegardes disponible sur votre tableau de bord.",
+      "Rendez-vous dans la section 'Messagerie' et cliquez sur 'Ajouter un compte e-mail'.",
+      "Consultez vos métriques d'utilisation dans l'onglet 'Statistiques & Bande passante'.",
+      "Oui, ajoutez simplement votre domaine personnalisé dans votre tableau de bord client.",
+      "Cliquez sur l'onglet 'Support' puis sélectionnez 'Créer un ticket'.",
+      "Utilisez l'outil 'Bases de données' pour créer et raccorder vos bases MySQL.",
+      "Activez l'option CDN depuis l'onglet 'Performance & Optimisation'.",
+      "Vous pouvez gérer ou résilier votre formule depuis l'espace 'Facturation & Formules'."
+    };
 
     if (faqRepository.count() == 0) {
       for (int i = 0; i < 12; i++) {
         faqRepository.save(FAQ.builder()
                 .question(faqQuestions[i])
                 .answer(faqAnswers[i])
-                .category(i % 2 == 0 ? "Billing" : "Setup")
+                .category(i % 2 == 0 ? "Facturation" : "Configuration")
                 .build());
+      }
+    } else {
+      // Auto-update existing English FAQs in MySQL table to professional French
+      List<FAQ> existingFaqs = faqRepository.findAll();
+      for (int i = 0; i < Math.min(existingFaqs.size(), faqQuestions.length); i++) {
+        FAQ f = existingFaqs.get(i);
+        f.setQuestion(faqQuestions[i]);
+        f.setAnswer(faqAnswers[i]);
+        f.setCategory(i % 2 == 0 ? "Facturation" : "Configuration");
+        faqRepository.save(f);
       }
     }
     List<FAQ> faqs = faqRepository.findAll();
