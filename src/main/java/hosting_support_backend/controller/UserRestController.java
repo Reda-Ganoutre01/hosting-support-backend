@@ -28,13 +28,13 @@ public class UserRestController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserResponseDTO> getById(@PathVariable long id){
+    public ResponseEntity<UserResponseDTO> getById(@PathVariable("id") long id){
         User user = userService.getById(id);
         return ResponseEntity.ok(toResponseDTO(user));
     }
 
     @GetMapping("/email/{email}")
-    public ResponseEntity<UserResponseDTO> getByEmail(@PathVariable String email){
+    public ResponseEntity<UserResponseDTO> getByEmail(@PathVariable("email") String email){
         return  userService.getByEmail(email)
                 .map(user -> ResponseEntity.ok(toResponseDTO(user)))
                 .orElseGet(()-> ResponseEntity.notFound().build());
@@ -60,7 +60,7 @@ public class UserRestController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable long id, @RequestBody User user){
+    public ResponseEntity<?> update(@PathVariable("id") long id, @RequestBody User user){
         try {
             User existing = userService.getById(id);
             if (existing == null) {
