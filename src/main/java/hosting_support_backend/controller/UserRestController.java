@@ -41,15 +41,55 @@ public class UserRestController {
     }
 
     @PostMapping
-    public ResponseEntity<UserResponseDTO>  create(@RequestBody User user){
-        User createdUser = userService.create(user);
-        return ResponseEntity.ok(toResponseDTO(createdUser));
+    public ResponseEntity<?> create(@RequestBody User user){
+        try {
+            if (user.getEmail() != null && userService.getByEmail(user.getEmail()).isPresent()) {
+                return ResponseEntity.status(org.springframework.http.HttpStatus.CONFLICT)
+                        .body("Email '" + user.getEmail() + "' is already registered.");
+            }
+            if (user.getUserName() != null && userService.getByUserName(user.getUserName()).isPresent()) {
+                return ResponseEntity.status(org.springframework.http.HttpStatus.CONFLICT)
+                        .body("Username '" + user.getUserName() + "' is already registered.");
+            }
+            User createdUser = userService.create(user);
+            return ResponseEntity.status(org.springframework.http.HttpStatus.CREATED).body(toResponseDTO(createdUser));
+        } catch (Exception e) {
+            return ResponseEntity.status(org.springframework.http.HttpStatus.BAD_REQUEST)
+                    .body(e.getMessage());
+        }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserResponseDTO>  update(@PathVariable long id,@RequestBody User user){
-        User updatedUser = userService.update(id, user);
-        return ResponseEntity.ok(toResponseDTO(updatedUser));
+    public ResponseEntity<?> update(@PathVariable long id, @RequestBody User user){
+        try {
+            User existing = userService.getById(id);
+            if (existing == null) {
+                return ResponseEntity.status(org.springframework.http.HttpStatus.NOT_FOUND)
+                        .body("User not found with id: " + id);
+            }
+
+            if (user.getEmail() != null && !user.getEmail().equalsIgnoreCase(existing.getEmail())) {
+                var byEmail = userService.getByEmail(user.getEmail());
+                if (byEmail.isPresent() && byEmail.get().getId() != id) {
+                    return ResponseEntity.status(org.springframework.http.HttpStatus.CONFLICT)
+                            .body("Email '" + user.getEmail() + "' is already used by another account.");
+                }
+            }
+
+            if (user.getUserName() != null && !user.getUserName().equalsIgnoreCase(existing.getUserName())) {
+                var byUsername = userService.getByUserName(user.getUserName());
+                if (byUsername.isPresent() && byUsername.get().getId() != id) {
+                    return ResponseEntity.status(org.springframework.http.HttpStatus.CONFLICT)
+                            .body("Username '" + user.getUserName() + "' is already used by another account.");
+                }
+            }
+
+            User updatedUser = userService.update(id, user);
+            return ResponseEntity.ok(toResponseDTO(updatedUser));
+        } catch (Exception e) {
+            return ResponseEntity.status(org.springframework.http.HttpStatus.BAD_REQUEST)
+                    .body(e.getMessage());
+        }
     }
 
     @DeleteMapping("/{id}")
