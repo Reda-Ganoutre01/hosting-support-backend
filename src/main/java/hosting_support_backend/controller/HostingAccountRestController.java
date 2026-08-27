@@ -59,8 +59,11 @@ public class HostingAccountRestController {
                 .status(hostingAccount.getStatus())
                 .startDate(hostingAccount.getStartDate())
                 .expirationDate(hostingAccount.getExpirationDate())
-                .userId(hostingAccount.getUser().getId())
-                .hostingPlanId(hostingAccount.getHostingPlan().getId())
+                .userId(hostingAccount.getUser() != null ? hostingAccount.getUser().getId() : null)
+                .userName(hostingAccount.getUser() != null ? (hostingAccount.getUser().getFullName() != null ? hostingAccount.getUser().getFullName() : hostingAccount.getUser().getUserName()) : null)
+                .userEmail(hostingAccount.getUser() != null ? hostingAccount.getUser().getEmail() : null)
+                .hostingPlanId(hostingAccount.getHostingPlan() != null ? hostingAccount.getHostingPlan().getId() : null)
+                .hostingPlanName(hostingAccount.getHostingPlan() != null ? hostingAccount.getHostingPlan().getName() : null)
                 .build();
     }
 }
