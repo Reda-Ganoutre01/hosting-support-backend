@@ -50,6 +50,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/hostingAccounts/**").permitAll()
                         .requestMatchers("/api/hostingPlans/**").permitAll()
                         .requestMatchers("/api/tickets/**").permitAll()
+                        .requestMatchers("/api/messages/**").permitAll()
                         .requestMatchers("/api/faqs/**").permitAll()
                         .requestMatchers("/api/aiResponses/**").permitAll()
                         .requestMatchers("/api/notifications/**").permitAll()
