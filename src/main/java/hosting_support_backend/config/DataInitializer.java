@@ -227,7 +227,8 @@ public class DataInitializer implements CommandLineRunner {
       "Vous pouvez gérer ou résilier votre formule depuis l'espace 'Facturation & Formules'."
     };
 
-    if (faqRepository.count() == 0) {
+    List<FAQ> existingFaqs = faqRepository.findAll();
+    if (existingFaqs.isEmpty()) {
       for (int i = 0; i < 12; i++) {
         faqRepository.save(FAQ.builder()
                 .question(faqQuestions[i])
@@ -236,8 +237,6 @@ public class DataInitializer implements CommandLineRunner {
                 .build());
       }
     } else {
-      // Auto-update existing English FAQs in MySQL table to professional French
-      List<FAQ> existingFaqs = faqRepository.findAll();
       for (int i = 0; i < Math.min(existingFaqs.size(), faqQuestions.length); i++) {
         FAQ f = existingFaqs.get(i);
         f.setQuestion(faqQuestions[i]);
@@ -247,7 +246,7 @@ public class DataInitializer implements CommandLineRunner {
       }
     }
     List<FAQ> faqs = faqRepository.findAll();
-    System.out.println("FAQs count after seeding: " + faqs.size());
+    System.out.println("FAQs count after seeding in French: " + faqs.size());
 
     String[] workflowNames = {"Deployment", "Backup", "Monitoring", "Scaling", "SSL renewal", "Database sync", "Cache clear", "Security scan", "Email sync", "DNS update", "Analytics import", "Resource cleanup"};
     if (workflowLogRepository.count() == 0) {
