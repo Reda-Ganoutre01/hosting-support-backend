@@ -19,7 +19,6 @@ public class MessageRequestDTO {
     @NotNull
     private Long ticketId;
 
-    @NotNull
-    private long userId;
+    private Long userId;
 
   }
