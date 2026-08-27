@@ -25,8 +25,16 @@ public class MessageServiceImpl implements MessageService {
         Ticket ticket = ticketRepository.findById(dto.getTicketId())
                 .orElseThrow(() -> new RuntimeException("Ticket not found with id: " + dto.getTicketId()));
 
-        User user = userRepository.findById(dto.getUserId())
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + dto.getUserId()));
+        User user = null;
+        if (dto.getUserId() != null && dto.getUserId() > 0) {
+            user = userRepository.findById(dto.getUserId()).orElse(null);
+        }
+        if (user == null) {
+            user = ticket.getUser();
+        }
+        if (user == null) {
+            user = userRepository.findAll().stream().findFirst().orElse(null);
+        }
 
         Message message = Message.builder()
                 .content(dto.getContent())
