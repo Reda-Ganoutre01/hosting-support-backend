@@ -34,6 +34,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(
             HttpSecurity http) throws Exception {
         http
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 // Disable CSRF since we use stateless JWT tokens
                 .csrf(csrf -> csrf.disable())
                 // Set session management to stateless
@@ -42,7 +43,16 @@ public class SecurityConfig {
                                 SessionCreationPolicy.STATELESS))
                 // Configure endpoint authorization
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
+                        .requestMatchers("/error").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/users/**").permitAll()
+                        .requestMatchers("/api/hostingAccounts/**").permitAll()
+                        .requestMatchers("/api/hostingPlans/**").permitAll()
+                        .requestMatchers("/api/tickets/**").permitAll()
+                        .requestMatchers("/api/faqs/**").permitAll()
+                        .requestMatchers("/api/notifications/**").permitAll()
+                        .requestMatchers("/api/workflowLogs/**").permitAll()
                         .requestMatchers("/actuator/health/**").permitAll()
                         .requestMatchers(
                                 "/swagger-ui.html",
@@ -53,13 +63,25 @@ public class SecurityConfig {
                                 "/v3/api-docs.yaml",
                                 "/webjars/**"
                         ).permitAll()
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 // Add JWT filter before the standard auth filter
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
+    }
+
+    @Bean
+    public org.springframework.web.cors.CorsConfigurationSource corsConfigurationSource() {
+        org.springframework.web.cors.CorsConfiguration config = new org.springframework.web.cors.CorsConfiguration();
+        config.setAllowedOriginPatterns(java.util.List.of("*"));
+        config.setAllowedMethods(java.util.List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+        config.setAllowedHeaders(java.util.List.of("*"));
+        config.setAllowCredentials(true);
+
+        org.springframework.web.cors.UrlBasedCorsConfigurationSource source = new org.springframework.web.cors.UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
     }
 
     // Password encoder for hashing passwords
