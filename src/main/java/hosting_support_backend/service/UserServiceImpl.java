@@ -1,8 +1,10 @@
 package hosting_support_backend.service;
 
 import hosting_support_backend.entity.User;
+import hosting_support_backend.entity.enums.Role;
 import hosting_support_backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,9 +15,23 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public User create(User user) {
+        if (user.getPassword() != null && !user.getPassword().trim().isEmpty()) {
+            if (!user.getPassword().startsWith("$2a$") && !user.getPassword().startsWith("$2b$")) {
+                user.setPassword(passwordEncoder.encode(user.getPassword()));
+            }
+        } else {
+            user.setPassword(passwordEncoder.encode("12345678"));
+        }
+        if (user.getRole() == null) {
+            user.setRole(Role.USER);
+        }
+        if (user.getEnabled() == null) {
+            user.setEnabled(true);
+        }
         return userRepository.save(user);
     }
 
@@ -24,13 +40,20 @@ public class UserServiceImpl implements UserService {
         User existing = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
 
-        existing.setUserName(user.getUserName());
-        existing.setFullName(user.getFullName());
-        existing.setEmail(user.getEmail());
-        existing.setPassword(user.getPassword());
-        existing.setPhone(user.getPhone());
-        existing.setRole(user.getRole());
-        existing.setEnabled(user.getEnabled());
+        if (user.getUserName() != null) existing.setUserName(user.getUserName());
+        if (user.getFullName() != null) existing.setFullName(user.getFullName());
+        if (user.getEmail() != null) existing.setEmail(user.getEmail());
+        if (user.getPhone() != null) existing.setPhone(user.getPhone());
+        if (user.getRole() != null) existing.setRole(user.getRole());
+        if (user.getEnabled() != null) existing.setEnabled(user.getEnabled());
+
+        if (user.getPassword() != null && !user.getPassword().trim().isEmpty()) {
+            if (!user.getPassword().startsWith("$2a$") && !user.getPassword().startsWith("$2b$")) {
+                existing.setPassword(passwordEncoder.encode(user.getPassword()));
+            } else {
+                existing.setPassword(user.getPassword());
+            }
+        }
 
         return userRepository.save(existing);
     }
@@ -64,3 +87,4 @@ public class UserServiceImpl implements UserService {
         return userRepository.findByUserName(userName);
     }
 }
+
