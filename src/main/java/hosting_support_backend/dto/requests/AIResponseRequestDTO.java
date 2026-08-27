@@ -1,25 +1,27 @@
 package hosting_support_backend.dto.requests;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class AIResponseRequestDTO {
-   @NotBlank
+    @NotBlank(message = "Prompt cannot be blank")
     private String prompt;
 
-    @NotBlank
     private String response;
 
-    @NotBlank
     private String provider;
 
     private Double confidenceScore;
 
-    @NotNull
     private Long ticketId;
 
     private Long workflowLogId;
