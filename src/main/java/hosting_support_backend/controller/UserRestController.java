@@ -20,6 +20,17 @@ public class UserRestController {
     private final UserService userService;
 
     @GetMapping
+    public ResponseEntity<org.springframework.data.domain.Page<UserResponseDTO>> getPaginated(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) String role,
+            @RequestParam(required = false) Boolean enabled){
+        org.springframework.data.domain.Page<User> userPage = userService.getPaginated(page, size, search, role, enabled);
+        return ResponseEntity.ok(userPage.map(this::toResponseDTO));
+    }
+
+    @GetMapping("/all")
     public ResponseEntity<List<UserResponseDTO>> getAll(){
         List<UserResponseDTO> dtos = userService.getAll().stream()
                 .map(this::toResponseDTO)

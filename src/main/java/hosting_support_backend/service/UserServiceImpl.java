@@ -81,6 +81,23 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public org.springframework.data.domain.Page<User> getPaginated(int page, int size, String search, String role, Boolean enabled) {
+        org.springframework.data.domain.Pageable pageable = 
+                org.springframework.data.domain.PageRequest.of(page, size, org.springframework.data.domain.Sort.by(org.springframework.data.domain.Sort.Direction.DESC, "id"));
+        
+        Role enumRole = null;
+        if (role != null && !role.trim().isEmpty() && !role.equalsIgnoreCase("ALL")) {
+            try {
+                enumRole = Role.valueOf(role.trim().toUpperCase());
+            } catch (Exception ignored) {}
+        }
+        
+        String cleanSearch = (search != null && !search.trim().isEmpty()) ? search.trim() : null;
+        
+        return userRepository.findByFilters(cleanSearch, enumRole, enabled, pageable);
+    }
+
+    @Override
     public Optional<User> getByEmail(String email) {
         return userRepository.findByEmail(email);
     }
