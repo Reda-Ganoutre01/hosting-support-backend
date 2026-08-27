@@ -13,20 +13,10 @@ import lombok.Setter;
 @Setter
 public class HostingAccountRequestDTO {
 
-    @NotBlank
     private String domainName;
-
     private HostingStatus status;
-
-    @NotNull
     private LocalDate startDate;
-
-    @NotNull
     private LocalDate expirationDate;
-
-    @NotNull
     private Long userId;
-
-    @NotNull
     private Long hostingPlanId;
 }

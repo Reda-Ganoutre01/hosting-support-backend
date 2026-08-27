@@ -18,5 +18,8 @@ public class HostingAccountResponseDTO {
     private LocalDate startDate;
     private LocalDate expirationDate;
     private Long userId;
+    private String userName;
+    private String userEmail;
     private Long hostingPlanId;
+    private String hostingPlanName;
 }

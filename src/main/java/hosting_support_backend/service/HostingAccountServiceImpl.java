@@ -45,10 +45,26 @@ public class HostingAccountServiceImpl implements HostingAccountService {
         HostingAccount existing = hostingAccountRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("HostingAccount not found with id: " + id));
 
-        existing.setDomainName(dto.getDomainName());
-        existing.setStatus(dto.getStatus());
-        existing.setStartDate(dto.getStartDate());
-        existing.setExpirationDate(dto.getExpirationDate());
+        if (dto.getDomainName() != null && !dto.getDomainName().trim().isEmpty()) {
+            existing.setDomainName(dto.getDomainName());
+        }
+        if (dto.getStatus() != null) {
+            existing.setStatus(dto.getStatus());
+        }
+        if (dto.getStartDate() != null) {
+            existing.setStartDate(dto.getStartDate());
+        }
+        if (dto.getExpirationDate() != null) {
+            existing.setExpirationDate(dto.getExpirationDate());
+        }
+        if (dto.getUserId() != null && dto.getUserId() > 0) {
+            User user = userRepository.findById(dto.getUserId()).orElse(null);
+            if (user != null) existing.setUser(user);
+        }
+        if (dto.getHostingPlanId() != null && dto.getHostingPlanId() > 0) {
+            HostingPlan plan = hostingPlanRepository.findById(dto.getHostingPlanId()).orElse(null);
+            if (plan != null) existing.setHostingPlan(plan);
+        }
 
         return hostingAccountRepository.save(existing);
     }
