@@ -36,8 +36,11 @@ public class MessageServiceImpl implements MessageService {
             user = userRepository.findAll().stream().findFirst().orElse(null);
         }
 
+        hosting_support_backend.entity.enums.SenderType sender = dto.getSender() != null ? dto.getSender() : hosting_support_backend.entity.enums.SenderType.USER;
+
         Message message = Message.builder()
                 .content(dto.getContent())
+                .sender(sender)
                 .ticket(ticket)
                 .user(user)
                 .build();
