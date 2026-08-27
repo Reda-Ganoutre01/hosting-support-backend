@@ -150,10 +150,11 @@ public class DataInitializer implements CommandLineRunner {
 
     TicketStatus[] ticketStatuses = {TicketStatus.OPEN, TicketStatus.IN_PROGRESS, TicketStatus.RESOLVED, TicketStatus.CLOSED, TicketStatus.OPEN, TicketStatus.IN_PROGRESS, TicketStatus.OPEN, TicketStatus.RESOLVED, TicketStatus.CLOSED, TicketStatus.OPEN, TicketStatus.IN_PROGRESS, TicketStatus.RESOLVED};
     Priority[] ticketPriorities = {Priority.HIGH, Priority.MEDIUM, Priority.LOW, Priority.MEDIUM, Priority.HIGH, Priority.LOW, Priority.MEDIUM, Priority.HIGH, Priority.LOW, Priority.MEDIUM, Priority.HIGH, Priority.LOW};
-    String[] ticketSubjects = {"Unable to login", "Website slow", "Email not working", "SSL setup", "Database issue", "Payment gateway error", "DNS propagation delay", "File upload failed", "Broken link report", "Account suspension", "Backup restore", "Performance tuning"};
-    String[] ticketDescriptions = {"I see an error when signing in.", "The site is very slow on mobile.", "Incoming emails are not delivered.", "I need help configuring SSL.", "My database won't connect.", "Checkout does not complete.", "DNS changes have not propagated.", "Uploads fail with a server error.", "A product page link is broken.", "My account was suspended unexpectedly.", "I need to restore yesterday's backup.", "Pages are loading too slowly."};
+    String[] ticketSubjects = {"Impossible de se connecter", "Site web très lent", "Problème de messagerie e-mail", "Configuration du certificat SSL", "Erreur de connexion base de données", "Échec de paiement d'hébergement", "Délai de propagation DNS", "Échec du transfert de fichiers FTP", "Rapport de lien cassé", "Suspension de compte imprévue", "Restauration de sauvegarde", "Optimisation des performances"};
+    String[] ticketDescriptions = {"Une erreur survient lors de la connexion à mon espace.", "Le site charge très lentement sur mobile.", "Les e-mails entrants ne sont plus distribués.", "J'ai besoin d'aide pour configurer le certificat SSL.", "Ma base de données MySQL refuse la connexion.", "La transaction de renouvellement n'a pas pu aboutir.", "Les modifications DNS ne sont pas encore visibles.", "Le transfert de fichiers via FTP échoue avec une erreur serveur.", "Un lien vers une page produit affiche une erreur 404.", "Mon compte d'hébergement a été suspendu de manière inattendue.", "Je souhaite restaurer la sauvegarde de la veille.", "Les pages web mettent trop de temps à se charger."};
 
-    if (ticketRepository.count() == 0 && !users.isEmpty()) {
+    List<Ticket> existingTickets = ticketRepository.findAll();
+    if (existingTickets.isEmpty() && !users.isEmpty()) {
       for (int i = 0; i < 12; i++) {
         ticketRepository.save(Ticket.builder()
                 .subject(ticketSubjects[i])
@@ -163,9 +164,16 @@ public class DataInitializer implements CommandLineRunner {
                 .user(users.get(i % users.size()))
                 .build());
       }
+    } else {
+      for (int i = 0; i < Math.min(existingTickets.size(), ticketSubjects.length); i++) {
+        Ticket t = existingTickets.get(i);
+        t.setSubject(ticketSubjects[i]);
+        t.setDescription(ticketDescriptions[i]);
+        ticketRepository.save(t);
+      }
     }
     List<Ticket> tickets = ticketRepository.findAll();
-    System.out.println("Tickets count after seeding: " + tickets.size());
+    System.out.println("Tickets count after seeding in French: " + tickets.size());
 
     String[] notificationTitles = {"Billing updated", "Account alert", "Migration complete", "New plan offer", "Security notice", "Renewal reminder", "Support reply", "Service notice", "Usage limit", "Feature launch", "System maintenance", "Policy update"};
     String[] notificationMessages = {"Your billing info has been updated.", "A security alert was detected on your account.", "Your migration finished successfully.", "A new hosting plan is available.", "Please review your security settings.", "Your renewal is due soon.", "Support has replied to your ticket.", "A service notice is available.", "You are near your usage limit.", "A new feature was launched.", "Scheduled maintenance is coming.", "Our policy has been updated."};
@@ -183,17 +191,48 @@ public class DataInitializer implements CommandLineRunner {
     }
     System.out.println("Notifications count after seeding: " + notificationRepository.count());
 
-    String[] messageContents = {"Can you check the ticket status?", "I already sent the payment.", "The site is still offline.", "I need additional storage.", "Please update the SSL certificate.", "My emails are bouncing back.", "I found a security issue.", "Can you increase my bandwidth?", "The upload still fails.", "I need help restoring the site.", "Is the backup complete?", "The support chat says resolved."};
-    SenderType[] senderTypes = {SenderType.USER, SenderType.ADMIN, SenderType.USER, SenderType.ADMIN, SenderType.USER, SenderType.ADMIN, SenderType.USER, SenderType.ADMIN, SenderType.USER, SenderType.ADMIN, SenderType.USER, SenderType.ADMIN};
+    String[] frMessageContents = {
+      "Bonjour, pouvez-vous vérifier le statut de mon ticket ?",
+      "Bonjour, notre équipe a bien reçu votre demande et analyse votre compte.",
+      "J'ai déjà effectué le paiement de renouvellement de mon domaine.",
+      "Votre paiement a été confirmé, votre service d'hébergement est réactivé.",
+      "Mon site web est toujours hors ligne après la modification DNS.",
+      "La propagation DNS est en cours et sera effective dans quelques minutes.",
+      "J'ai besoin de plus d'espace de stockage sur mon hébergement.",
+      "Votre formule a été mise à jour avec 50 Go d'espace supplémentaire.",
+      "Merci de mettre à jour le certificat SSL pour mon domaine.",
+      "Le certificat SSL Let's Encrypt a été régénéré et activé avec succès.",
+      "Mes e-mails entrants me reviennent avec une erreur de livraison.",
+      "Le filtre anti-spam a été ajusté et vos e-mails fonctionnent à nouveau."
+    };
+    SenderType[] frSenderTypes = {
+      SenderType.USER, SenderType.ADMIN,
+      SenderType.USER, SenderType.ADMIN,
+      SenderType.USER, SenderType.ADMIN,
+      SenderType.USER, SenderType.ADMIN,
+      SenderType.USER, SenderType.ADMIN,
+      SenderType.USER, SenderType.ADMIN
+    };
 
-    if (messageRepository.count() == 0 && !tickets.isEmpty() && !users.isEmpty()) {
+    List<Message> existingMessages = messageRepository.findAll();
+    if (existingMessages.isEmpty()) {
       for (int i = 0; i < 12; i++) {
         messageRepository.save(Message.builder()
-                .content(messageContents[i])
-                .sender(senderTypes[i])
-                .ticket(tickets.get(i % tickets.size()))
-                .user(users.get(i % users.size()))
+                .content(frMessageContents[i])
+                .sender(frSenderTypes[i])
+                .ticket(tickets.get((i / 2) % tickets.size()))
+                .user(frSenderTypes[i] == SenderType.ADMIN ? users.get(0) : users.get((i / 2) % users.size()))
                 .build());
+      }
+    } else {
+      for (int i = 0; i < Math.min(existingMessages.size(), frMessageContents.length); i++) {
+        Message msg = existingMessages.get(i);
+        msg.setContent(frMessageContents[i]);
+        msg.setSender(frSenderTypes[i]);
+        if (frSenderTypes[i] == SenderType.ADMIN && !users.isEmpty()) {
+          msg.setUser(users.get(0));
+        }
+        messageRepository.save(msg);
       }
     }
     System.out.println("Messages count after seeding: " + messageRepository.count());
