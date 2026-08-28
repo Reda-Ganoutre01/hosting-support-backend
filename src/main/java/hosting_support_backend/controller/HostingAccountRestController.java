@@ -33,6 +33,14 @@ public class HostingAccountRestController {
         return ResponseEntity.ok(toResponseDTO(hostingAccount));
     }
 
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<HostingAccountResponseDTO>> getByUserId(@PathVariable long userId){
+        List<HostingAccountResponseDTO> dtos = hostingAccountService.getByUserId(userId).stream()
+                .map(this::toResponseDTO)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(dtos);
+    }
+
     @PostMapping
     public ResponseEntity<HostingAccountResponseDTO> create(@RequestBody HostingAccountRequestDTO hostingAccount){
         HostingAccount createdHostingAccount = hostingAccountService.create(hostingAccount);
