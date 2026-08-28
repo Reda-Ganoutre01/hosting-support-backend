@@ -28,8 +28,8 @@ public class JwtTokenProvider {
     @Value("${app.jwt.expiration-ms}")
     private long jwtExpirationMs;
 
-    // Generate a JWT token for an authenticated user
-    public String generateToken(UserDetails userDetails) {
+    // Generate a JWT token for an authenticated user with optional userId
+    public String generateToken(UserDetails userDetails, Long userId) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + jwtExpirationMs);
 
@@ -38,7 +38,7 @@ public class JwtTokenProvider {
                 Decoders.BASE64.decode(jwtSecret)
         );
 
-        return Jwts.builder()
+        var builder = Jwts.builder()
                 // Subject is the username
                 .subject(userDetails.getUsername())
                 // Include roles as a custom claim
@@ -46,10 +46,17 @@ public class JwtTokenProvider {
                         .map(GrantedAuthority::getAuthority)
                         .collect(Collectors.toList()))
                 .issuedAt(now)
-                .expiration(expiryDate)
-                // Sign with the strongest HMAC-SHA algorithm allowed by the key
-                .signWith(key)
-                .compact();
+                .expiration(expiryDate);
+
+        if (userId != null) {
+            builder.claim("id", userId);
+        }
+
+        return builder.signWith(key).compact();
+    }
+
+    public String generateToken(UserDetails userDetails) {
+        return generateToken(userDetails, null);
     }
 
     // Extract the username from a valid token
