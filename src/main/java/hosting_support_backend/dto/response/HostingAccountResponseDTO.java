@@ -22,4 +22,5 @@ public class HostingAccountResponseDTO {
     private String userEmail;
     private Long hostingPlanId;
     private String hostingPlanName;
+    private Double price;
 }
