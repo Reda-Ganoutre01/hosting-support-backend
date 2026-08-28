@@ -60,7 +60,9 @@ public class AuthController {
 
         // Generate JWT token
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        String token = tokenProvider.generateToken(userDetails);
+        User user = userService.getByEmail(userDetails.getUsername()).orElse(null);
+        Long userId = user != null ? user.getId() : null;
+        String token = tokenProvider.generateToken(userDetails, userId);
 
         return ResponseEntity.ok(new AuthResponse(token));
     }
