@@ -19,14 +19,21 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     public Ticket create(TicketRequestDTO dto) {
-        User user = userRepository.findById(dto.getUserId())
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + dto.getUserId()));
+        Long targetUserId = dto.getUserId();
+        User user = null;
+        if (targetUserId != null) {
+            user = userRepository.findById(targetUserId).orElse(null);
+        }
+        if (user == null) {
+            user = userRepository.findAll().stream().findFirst()
+                    .orElseThrow(() -> new RuntimeException("No user available to create ticket"));
+        }
 
         Ticket ticket = Ticket.builder()
                 .subject(dto.getSubject())
                 .description(dto.getDescription())
-                .status(dto.getStatus())
-                .priority(dto.getPriority())
+                .status(dto.getStatus() != null ? dto.getStatus() : hosting_support_backend.entity.enums.TicketStatus.OPEN)
+                .priority(dto.getPriority() != null ? dto.getPriority() : hosting_support_backend.entity.enums.Priority.MEDIUM)
                 .user(user)
                 .build();
 
