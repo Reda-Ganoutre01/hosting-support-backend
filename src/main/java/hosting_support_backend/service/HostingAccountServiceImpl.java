@@ -22,14 +22,12 @@ public class HostingAccountServiceImpl implements HostingAccountService {
 
     @Override
     public HostingAccount create(HostingAccountRequestDTO dto) {
-        User user = null;
-        if (dto.getUserId() != null && dto.getUserId() > 0) {
-            user = userRepository.findById(dto.getUserId()).orElse(null);
+        if (dto.getUserId() == null || dto.getUserId() <= 0) {
+            throw new RuntimeException("L'identifiant utilisateur est requis pour créer un compte d'hébergement.");
         }
-        if (user == null) {
-            user = userRepository.findAll().stream().findFirst()
-                    .orElseThrow(() -> new RuntimeException("Aucun utilisateur valide trouvé pour assigner le compte."));
-        }
+
+        User user = userRepository.findById(dto.getUserId())
+                .orElseThrow(() -> new RuntimeException("Utilisateur introuvable avec l'id: " + dto.getUserId()));
 
         HostingPlan hostingPlan = null;
         if (dto.getHostingPlanId() != null && dto.getHostingPlanId() > 0) {
