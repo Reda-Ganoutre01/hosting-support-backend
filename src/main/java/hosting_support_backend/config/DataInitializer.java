@@ -130,6 +130,41 @@ public class DataInitializer implements CommandLineRunner {
     List<HostingPlan> plans = hostingPlanRepository.findAll();
     System.out.println("Hosting plans count after seeding: " + plans.size());
 
+    // Seed specific e-commerce and site mojoud plans if missing
+    if (!hostingPlanRepository.existsByName("Pack E-Commerce Pro")) {
+      hostingPlanRepository.save(HostingPlan.builder()
+              .name("Pack E-Commerce Pro")
+              .description("Boutique e-commerce complète avec module de paiement CMI")
+              .price(5499.45)
+              .storage(100)
+              .bandwidth(2000)
+              .emailAccounts(20)
+              .sslIncluded(true)
+              .build());
+    }
+    if (!hostingPlanRepository.existsByName("Formule Mojoud 1 An")) {
+      hostingPlanRepository.save(HostingPlan.builder()
+              .name("Formule Mojoud 1 An")
+              .description("Constructeur de site web sans codage + Domaine .MA 1 an")
+              .price(3799.00)
+              .storage(50)
+              .bandwidth(1000)
+              .emailAccounts(10)
+              .sslIncluded(true)
+              .build());
+    }
+    if (!hostingPlanRepository.existsByName("Formule Mojoud 3 Ans")) {
+      hostingPlanRepository.save(HostingPlan.builder()
+              .name("Formule Mojoud 3 Ans")
+              .description("Constructeur de site web sans codage 3 ans économique")
+              .price(4500.00)
+              .storage(150)
+              .bandwidth(3000)
+              .emailAccounts(30)
+              .sslIncluded(true)
+              .build());
+    }
+
     String[] domains = {"redahost.com", "fastweb.io", "cloudgen.net", "sitepro.org", "hostingzone.com", "webedge.io", "serverhub.net", "hostify.org", "netlaunch.com", "webmatrix.io", "brighthost.net", "cloudnest.org"};
     HostingStatus[] hostStatuses = {HostingStatus.ACTIVE, HostingStatus.SUSPENDED, HostingStatus.EXPIRED, HostingStatus.ACTIVE, HostingStatus.ACTIVE, HostingStatus.SUSPENDED, HostingStatus.ACTIVE, HostingStatus.EXPIRED, HostingStatus.ACTIVE, HostingStatus.ACTIVE, HostingStatus.SUSPENDED, HostingStatus.ACTIVE};
 
