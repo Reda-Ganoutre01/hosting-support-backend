@@ -35,6 +35,9 @@ public class HostingAccountServiceImpl implements HostingAccountService {
         if (dto.getHostingPlanId() != null && dto.getHostingPlanId() > 0) {
             hostingPlan = hostingPlanRepository.findById(dto.getHostingPlanId()).orElse(null);
         }
+        if (hostingPlan == null && dto.getHostingPlanName() != null && !dto.getHostingPlanName().trim().isEmpty()) {
+            hostingPlan = hostingPlanRepository.findByName(dto.getHostingPlanName().trim()).orElse(null);
+        }
         if (hostingPlan == null) {
             hostingPlan = hostingPlanRepository.findAll().stream().findFirst()
                     .orElseThrow(() -> new RuntimeException("Aucune formule d'hébergement valide trouvée."));
