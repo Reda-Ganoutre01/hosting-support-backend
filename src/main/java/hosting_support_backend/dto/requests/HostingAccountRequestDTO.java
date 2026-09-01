@@ -19,4 +19,5 @@ public class HostingAccountRequestDTO {
     private LocalDate expirationDate;
     private Long userId;
     private Long hostingPlanId;
+    private String hostingPlanName;
 }
