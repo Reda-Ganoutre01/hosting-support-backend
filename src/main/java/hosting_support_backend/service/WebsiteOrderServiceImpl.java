@@ -42,10 +42,12 @@ public class WebsiteOrderServiceImpl implements WebsiteOrderService {
 
     @Override
     public WebsiteOrder create(WebsiteOrderDTO dto) {
-        User user = null;
-        if (dto.getUserId() != null) {
-            user = userRepository.findById(dto.getUserId()).orElse(null);
+        if (dto.getUserId() == null || dto.getUserId() <= 0) {
+            throw new RuntimeException("L'identifiant utilisateur est requis pour créer une commande de site web.");
         }
+
+        User user = userRepository.findById(dto.getUserId())
+                .orElseThrow(() -> new RuntimeException("Utilisateur introuvable avec l'id: " + dto.getUserId()));
 
         WebsiteOrder order = WebsiteOrder.builder()
                 .domainName(dto.getDomainName() != null ? dto.getDomainName() : "domaine.ma")
