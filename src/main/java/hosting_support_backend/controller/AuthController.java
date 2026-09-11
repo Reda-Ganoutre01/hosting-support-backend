@@ -17,9 +17,13 @@ import hosting_support_backend.dto.requests.LoginRequest;
 import hosting_support_backend.dto.requests.UserRequestDTO;
 import hosting_support_backend.dto.response.AuthResponse;
 import hosting_support_backend.entity.User;
+import hosting_support_backend.entity.enums.Role;
 import hosting_support_backend.security.JwtTokenProvider;
+import hosting_support_backend.service.MaintenanceModeService;
 import hosting_support_backend.service.UserService;
 import jakarta.validation.Valid;
+
+import java.util.Map;
 
 // AuthController.java - Authentication endpoints
 @RestController
@@ -30,21 +34,24 @@ public class AuthController {
     private final JwtTokenProvider tokenProvider;
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
+    private final MaintenanceModeService maintenanceModeService;
 
     public AuthController(
             AuthenticationManager authenticationManager,
             JwtTokenProvider tokenProvider,
             UserService userService,
-            PasswordEncoder passwordEncoder) {
+            PasswordEncoder passwordEncoder,
+            MaintenanceModeService maintenanceModeService) {
         this.authenticationManager = authenticationManager;
         this.tokenProvider = tokenProvider;
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
+        this.maintenanceModeService = maintenanceModeService;
     }
 
     // POST /api/auth/login - Authenticate and return JWT
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(
+    public ResponseEntity<?> login(
             @Valid @RequestBody LoginRequest request) {
         // Authenticate with Spring Security using email instead of username
         Authentication authentication = authenticationManager.authenticate(
@@ -61,6 +68,17 @@ public class AuthController {
         // Generate JWT token
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         User user = userService.getByEmail(userDetails.getUsername()).orElse(null);
+
+        // During maintenance, only administrators may authenticate.
+        if (maintenanceModeService.isMaintenanceEnabled()
+                && (user == null || user.getRole() != Role.ADMIN)) {
+            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+                    .body(Map.of(
+                            "message", "Le site est en maintenance. L'accès est réservé aux administrateurs.",
+                            "maintenance", true
+                    ));
+        }
+
         Long userId = user != null ? user.getId() : null;
         String token = tokenProvider.generateToken(userDetails, userId);
 
@@ -70,6 +88,15 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody UserRequestDTO registerRequestDto) {
+        // Registration is disabled for everyone while the site is in maintenance.
+        if (maintenanceModeService.isMaintenanceEnabled()) {
+            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+                    .body(Map.of(
+                            "message", "L'inscription est désactivée pendant la maintenance. Accès réservé aux administrateurs.",
+                            "maintenance", true
+                    ));
+        }
+
         if (userService.getByEmail(registerRequestDto.getEmail()).isPresent()) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body("Email is already registered");
