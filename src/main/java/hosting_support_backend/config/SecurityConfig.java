@@ -16,6 +16,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import hosting_support_backend.security.JwtAuthenticationFilter;
+import hosting_support_backend.security.MaintenanceModeFilter;
 
 // SecurityConfig.java - Spring Security configuration
 @Configuration
@@ -24,10 +25,12 @@ import hosting_support_backend.security.JwtAuthenticationFilter;
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtFilter;
+    private final MaintenanceModeFilter maintenanceModeFilter;
 
-    public SecurityConfig(JwtAuthenticationFilter jwtFilter) {
+    public SecurityConfig(JwtAuthenticationFilter jwtFilter, MaintenanceModeFilter maintenanceModeFilter) {
 
         this.jwtFilter = jwtFilter;
+        this.maintenanceModeFilter = maintenanceModeFilter;
     }
 
     @Bean
@@ -46,6 +49,8 @@ public class SecurityConfig {
                         .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/error").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
+                        // Public read of maintenance status (used to show the banner on login/register)
+                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/settings/maintenance").permitAll()
                         .requestMatchers("/api/users/**").permitAll()
                         .requestMatchers("/api/hostingAccounts/**").permitAll()
                         .requestMatchers("/api/hostingPlans/**").permitAll()
@@ -67,8 +72,10 @@ public class SecurityConfig {
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
-                // Add JWT filter before the standard auth filter
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+                // Add JWT filter before the standard auth filter, then gate /api traffic
+                // behind the maintenance filter (which must run after authentication).
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(maintenanceModeFilter, JwtAuthenticationFilter.class);
 
         return http.build();
     }
@@ -97,6 +104,18 @@ public class SecurityConfig {
     public FilterRegistrationBean<JwtAuthenticationFilter> jwtFilterRegistration(
             JwtAuthenticationFilter filter) {
         FilterRegistrationBean<JwtAuthenticationFilter> registration =
+                new FilterRegistrationBean<>(filter);
+        registration.setEnabled(false);
+        return registration;
+    }
+
+    // Prevent Spring Boot from auto-registering the maintenance filter as a
+    // plain servlet filter so it only runs inside the security chain,
+    // after the JWT filter has populated the security context.
+    @Bean
+    public FilterRegistrationBean<MaintenanceModeFilter> maintenanceModeFilterRegistration(
+            MaintenanceModeFilter filter) {
+        FilterRegistrationBean<MaintenanceModeFilter> registration =
                 new FilterRegistrationBean<>(filter);
         registration.setEnabled(false);
         return registration;
