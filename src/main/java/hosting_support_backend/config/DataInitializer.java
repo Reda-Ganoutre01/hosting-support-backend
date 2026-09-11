@@ -1,6 +1,7 @@
 package hosting_support_backend.config;
 
 import hosting_support_backend.entity.AIResponse;
+import hosting_support_backend.entity.AppSetting;
 import hosting_support_backend.entity.FAQ;
 import hosting_support_backend.entity.HostingAccount;
 import hosting_support_backend.entity.HostingPlan;
@@ -15,6 +16,7 @@ import hosting_support_backend.entity.enums.Role;
 import hosting_support_backend.entity.enums.SenderType;
 import hosting_support_backend.entity.enums.TicketStatus;
 import hosting_support_backend.repository.AIResponseRepository;
+import hosting_support_backend.repository.AppSettingRepository;
 import hosting_support_backend.repository.FAQRepository;
 import hosting_support_backend.repository.HostingAccountRepository;
 import hosting_support_backend.repository.HostingPlanRepository;
@@ -47,6 +49,7 @@ public class DataInitializer implements CommandLineRunner {
   private final AIResponseRepository aiResponseRepository;
   private final FAQRepository faqRepository;
   private final WorkflowLogRepository workflowLogRepository;
+  private final AppSettingRepository appSettingRepository;
   private final PasswordEncoder passwordEncoder;
 
   @Override
@@ -349,6 +352,14 @@ public class DataInitializer implements CommandLineRunner {
       }
     }
     System.out.println("AI responses count after seeding: " + aiResponseRepository.count());
+
+    // Seed default app settings (maintenance mode is OFF by default).
+    if (!appSettingRepository.findBySettingKey("MAINTENANCE_MODE").isPresent()) {
+      appSettingRepository.save(AppSetting.builder()
+              .settingKey("MAINTENANCE_MODE")
+              .settingValue("false")
+              .build());
+    }
 
     System.out.println("✅ Default data inserted cleanly.");
   }
