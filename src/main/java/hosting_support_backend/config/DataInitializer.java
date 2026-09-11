@@ -2,6 +2,7 @@ package hosting_support_backend.config;
 
 import hosting_support_backend.entity.AIResponse;
 import hosting_support_backend.entity.AppSetting;
+import hosting_support_backend.entity.Contact;
 import hosting_support_backend.entity.FAQ;
 import hosting_support_backend.entity.HostingAccount;
 import hosting_support_backend.entity.HostingPlan;
@@ -17,6 +18,7 @@ import hosting_support_backend.entity.enums.SenderType;
 import hosting_support_backend.entity.enums.TicketStatus;
 import hosting_support_backend.repository.AIResponseRepository;
 import hosting_support_backend.repository.AppSettingRepository;
+import hosting_support_backend.repository.ContactRepository;
 import hosting_support_backend.repository.FAQRepository;
 import hosting_support_backend.repository.HostingAccountRepository;
 import hosting_support_backend.repository.HostingPlanRepository;
@@ -50,6 +52,7 @@ public class DataInitializer implements CommandLineRunner {
   private final FAQRepository faqRepository;
   private final WorkflowLogRepository workflowLogRepository;
   private final AppSettingRepository appSettingRepository;
+  private final ContactRepository contactRepository;
   private final PasswordEncoder passwordEncoder;
 
   @Override
@@ -360,6 +363,30 @@ public class DataInitializer implements CommandLineRunner {
               .settingValue("false")
               .build());
     }
+
+    // Seed sample contact messages for the admin "Gestion des contacts" page.
+    String[] contactNames = {"Maria Santos", "Nina Patel", "Ahmed Bennani", "Sara El Amrani", "David Brown"};
+    String[] contactEmails = {"maria.santos@example.com", "nina.patel@example.com", "ahmed.bennani@example.com", "sara.elamrani@example.com", "david.brown@example.com"};
+    String[] contactSubjects = {"Question sur la formule Premium", "Demande de facture", "Problème de renouvellement de domaine", "Service très satisfaisant", "Besoin d'aide pour configurer mon e-mail"};
+    String[] contactMessages = {
+      "Bonjour, je souhaite savoir si la formule Premium inclut bien un certificat SSL et une sauvegarde quotidienne.",
+      "Pourriez-vous m'envoyer une facture au format PDF pour mon dernier paiement ?",
+      "Mon nom de domaine expire bientôt, comment puis-je le renouveler automatiquement ?",
+      "Très bon service, je tiens à féliciter l'équipe support pour sa réactivité.",
+      "J'ai besoin d'aide pour configurer mon adresse e-mail sur Outlook."
+    };
+    if (contactRepository.count() == 0) {
+      for (int i = 0; i < contactNames.length; i++) {
+        contactRepository.save(Contact.builder()
+                .name(contactNames[i])
+                .email(contactEmails[i])
+                .subject(contactSubjects[i])
+                .message(contactMessages[i])
+                .userId(users.isEmpty() ? null : users.get((i % users.size())).getId())
+                .build());
+      }
+    }
+    System.out.println("Contacts count after seeding: " + contactRepository.count());
 
     System.out.println("✅ Default data inserted cleanly.");
   }
