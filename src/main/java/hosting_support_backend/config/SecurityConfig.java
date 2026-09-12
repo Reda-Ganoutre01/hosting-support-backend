@@ -51,6 +51,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                         // Public read of maintenance status (used to show the banner on login/register)
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/settings/maintenance").permitAll()
+                        // Public contact form submission
+                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/contacts").permitAll()
                         .requestMatchers("/api/users/**").permitAll()
                         .requestMatchers("/api/hostingAccounts/**").permitAll()
                         .requestMatchers("/api/hostingPlans/**").permitAll()
