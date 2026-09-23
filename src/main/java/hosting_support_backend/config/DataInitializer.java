@@ -114,24 +114,29 @@ public class DataInitializer implements CommandLineRunner {
         );
       }
     } else {
-      userRepository.findByEmail("admin@vala.com").ifPresentOrElse(
-          admin -> {
-            if (admin.getRole() != Role.ADMIN || admin.getEnabled() != Boolean.TRUE) {
-              admin.setRole(Role.ADMIN);
-              admin.setEnabled(true);
-              userRepository.save(admin);
-            }
-          },
-          () -> ensureUser(
-              "reda",
-              "Reda",
-              "admin@vala.com",
-              "+1-202-555-0173",
-              passwordEncoder.encode("12345678"),
-              Role.ADMIN,
-              true
-          )
-      );
+      // Converge the existing admin account to the canonical credentials so
+      // admin@vala.com / 12345678 always works even on a pre-seeded database.
+      User admin = userRepository.findByEmail("admin@vala.com")
+          .orElseGet(() -> userRepository.findByEmail("reda@example.com").orElse(null));
+      if (admin != null) {
+        admin.setEmail("admin@vala.com");
+        admin.setRole(Role.ADMIN);
+        admin.setEnabled(true);
+        if (!passwordEncoder.matches("12345678", admin.getPassword())) {
+          admin.setPassword(passwordEncoder.encode("12345678"));
+        }
+        userRepository.save(admin);
+      } else {
+        ensureUser(
+            "reda",
+            "Reda",
+            "admin@vala.com",
+            "+1-202-555-0173",
+            passwordEncoder.encode("12345678"),
+            Role.ADMIN,
+            true
+        );
+      }
     }
 
     ensureUser(
