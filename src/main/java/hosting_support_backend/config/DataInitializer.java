@@ -133,6 +133,17 @@ public class DataInitializer implements CommandLineRunner {
           )
       );
     }
+
+    ensureUser(
+        "reda-user",
+        "Reda Client",
+        "reda@vala.com",
+        "+1-202-555-0100",
+        passwordEncoder.encode("12345678"),
+        Role.USER,
+        true
+    );
+
     List<User> users = userRepository.findAll();
     System.out.println("Users count after seeding: " + users.size());
 
