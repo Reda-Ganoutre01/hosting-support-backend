@@ -16,6 +16,15 @@
 		<java.version>23</java.version>
 		<maven.compiler.source>23</maven.compiler.source>
 		<maven.compiler.target>23</maven.compiler.target>
+
+		<!-- Test dependencies versions -->
+		<selenium.version>4.44.0</selenium.version>
+		<webdrivermanager.version>6.3.4</webdrivermanager.version>
+
+		<!-- Selenium tests are tagged @Tag("selenium") and excluded by default.
+		     Activate the "selenium" Maven profile to run them. -->
+		<surefire.groups></surefire.groups>
+		<surefire.excludedGroups>selenium</surefire.excludedGroups>
 	</properties>
 
 	<dependencies>
@@ -90,6 +99,44 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+
+		<!-- MockMvc support for Spring Boot 4 (replaces the Spring Boot 3
+		     test-autoconfigure web.servlet package) -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-webmvc-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- In-memory database so JUnit tests run without a MySQL server -->
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- JUnit Platform launcher required by Maven Surefire 3.x -->
+		<dependency>
+			<groupId>org.junit.platform</groupId>
+			<artifactId>junit-platform-launcher</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- Selenium WebDriver for browser end-to-end tests -->
+		<dependency>
+			<groupId>org.seleniumhq.selenium</groupId>
+			<artifactId>selenium-java</artifactId>
+			<version>${selenium.version}</version>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- Automated management of browser drivers (ChromeDriver, etc.) -->
+		<dependency>
+			<groupId>io.github.bonigarcia</groupId>
+			<artifactId>webdrivermanager</artifactId>
+			<version>${webdrivermanager.version}</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -104,6 +151,14 @@
 							<artifactId>lombok</artifactId>
 						</exclude>
 					</excludes>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<groups>${surefire.groups}</groups>
+					<excludedGroups>${surefire.excludedGroups}</excludedGroups>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -147,4 +202,16 @@
 		</plugins>
 	</build>
 
+	<profiles>
+		<!-- Run Selenium end-to-end tests against a running app:
+		     backend on :8081 and frontend dev server on :5173.
+		     Usage: ./mvnw test -Pselenium -->
+		<profile>
+			<id>selenium</id>
+			<properties>
+				<surefire.groups>selenium</surefire.groups>
+				<surefire.excludedGroups></surefire.excludedGroups>
+			</properties>
+		</profile>
+	</profiles>
 </project>
