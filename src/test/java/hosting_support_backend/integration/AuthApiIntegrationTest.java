@@ -30,7 +30,7 @@ class AuthApiIntegrationTest {
         MvcResult result = mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
-                                {"email":"reda@example.com","password":"12345678"}
+                                {"email":"admin@vala.com","password":"12345678"}
                                 """))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.token").isNotEmpty())
@@ -45,7 +45,7 @@ class AuthApiIntegrationTest {
         mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
-                                {"email":"reda@example.com","password":"wrong-password"}
+                                {"email":"admin@vala.com","password":"wrong-password"}
                                 """))
                 .andExpect(status().is4xxClientError());
     }
@@ -70,7 +70,7 @@ class AuthApiIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {"fullName":"Reda","userName":"someone-else",
-                                 "email":"reda@example.com","password":"secret123",
+                                 "email":"admin@vala.com","password":"secret123",
                                  "phone":"0600000000","role":"USER"}
                                 """))
                 .andExpect(status().isConflict());

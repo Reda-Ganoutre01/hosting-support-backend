@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * End-to-end tests for the login page.
  *
- * <p>Uses the seeded admin account: reda@example.com / 12345678.
+ * <p>Uses the seeded admin account: admin@vala.com / 12345678.
  */
 class LoginPageSeleniumTest extends BaseSeleniumTest {
 
@@ -37,7 +37,7 @@ class LoginPageSeleniumTest extends BaseSeleniumTest {
 
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("email")));
         pause("Saisie de l'adresse email");
-        driver.findElement(By.id("email")).sendKeys("reda@example.com");
+        driver.findElement(By.id("email")).sendKeys("admin@vala.com");
         pause("Saisie du mot de passe");
         driver.findElement(By.id("password")).sendKeys("12345678");
         pause("Clic sur le bouton Se connecter");
@@ -55,7 +55,7 @@ class LoginPageSeleniumTest extends BaseSeleniumTest {
         driver.get(BASE_URL + "/login");
 
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("email")));
-        driver.findElement(By.id("email")).sendKeys("reda@example.com");
+        driver.findElement(By.id("email")).sendKeys("admin@vala.com");
         driver.findElement(By.id("password")).sendKeys("definitely-wrong");
         pause("Soumission des identifiants incorrects");
         driver.findElement(By.cssSelector("button[type='submit']")).click();
