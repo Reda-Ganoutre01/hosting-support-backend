@@ -25,7 +25,7 @@ app:
     # Token expires after 24 hours
     expiration-ms: 86400000
 server:
-  port: 8081
+  port: ${PORT:8081}
 
 springdoc:
   api-docs:
