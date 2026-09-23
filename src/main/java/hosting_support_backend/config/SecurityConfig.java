@@ -14,6 +14,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfigurationSource;
 
 import hosting_support_backend.security.JwtAuthenticationFilter;
 import hosting_support_backend.security.MaintenanceModeFilter;
@@ -26,18 +27,23 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtFilter;
     private final MaintenanceModeFilter maintenanceModeFilter;
+    private final CorsConfigurationSource corsConfigurationSource;
 
-    public SecurityConfig(JwtAuthenticationFilter jwtFilter, MaintenanceModeFilter maintenanceModeFilter) {
+    public SecurityConfig(
+            JwtAuthenticationFilter jwtFilter,
+            MaintenanceModeFilter maintenanceModeFilter,
+            CorsConfigurationSource corsConfigurationSource) {
 
         this.jwtFilter = jwtFilter;
         this.maintenanceModeFilter = maintenanceModeFilter;
+        this.corsConfigurationSource = corsConfigurationSource;
     }
 
     @Bean
     public SecurityFilterChain securityFilterChain(
             HttpSecurity http) throws Exception {
         http
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .cors(cors -> cors.configurationSource(corsConfigurationSource))
                 // Disable CSRF since we use stateless JWT tokens
                 .csrf(csrf -> csrf.disable())
                 // Set session management to stateless
@@ -80,19 +86,6 @@ public class SecurityConfig {
                 .addFilterAfter(maintenanceModeFilter, JwtAuthenticationFilter.class);
 
         return http.build();
-    }
-
-    @Bean
-    public org.springframework.web.cors.CorsConfigurationSource corsConfigurationSource() {
-        org.springframework.web.cors.CorsConfiguration config = new org.springframework.web.cors.CorsConfiguration();
-        config.setAllowedOriginPatterns(java.util.List.of("*"));
-        config.setAllowedMethods(java.util.List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
-        config.setAllowedHeaders(java.util.List.of("*"));
-        config.setAllowCredentials(true);
-
-        org.springframework.web.cors.UrlBasedCorsConfigurationSource source = new org.springframework.web.cors.UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", config);
-        return source;
     }
 
     // Password encoder for hashing passwords
