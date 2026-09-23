@@ -55,48 +55,82 @@ public class DataInitializer implements CommandLineRunner {
   private final ContactRepository contactRepository;
   private final PasswordEncoder passwordEncoder;
 
+  private User ensureUser(String userName, String fullName, String email, String phone,
+                         String password, Role role, boolean enabled) {
+    return userRepository.findByEmail(email).orElseGet(() -> {
+      return userRepository.findByUserName(userName).orElseGet(() -> userRepository.save(
+          User.builder()
+              .userName(userName)
+              .fullName(fullName)
+              .email(email)
+              .phone(phone)
+              .password(password)
+              .role(role)
+              .enabled(enabled)
+              .build()
+      ));
+    });
+  }
+
+  private HostingPlan ensureHostingPlan(String name, String description, Double price,
+                                       Integer storage, Integer bandwidth,
+                                       Integer emailAccounts, Boolean sslIncluded) {
+    return hostingPlanRepository.findAll().stream()
+        .filter(plan -> plan.getName() != null && plan.getName().equalsIgnoreCase(name))
+        .findFirst()
+        .orElseGet(() -> hostingPlanRepository.save(
+            HostingPlan.builder()
+                .name(name)
+                .description(description)
+                .price(price)
+                .storage(storage)
+                .bandwidth(bandwidth)
+                .emailAccounts(emailAccounts)
+                .sslIncluded(sslIncluded)
+                .build()
+        ));
+  }
+
   @Override
   public void run(String... args) {
     System.out.println("🟢 DataInitializer starting...");
 
     String[] userNames = {"reda", "maria", "nina", "david", "julia", "omar", "liam", "sophia", "michael", "leah", "noah", "emma"};
     String[] fullNames = {"Reda", "Maria Santos", "Nina Patel", "David Brown", "Julia Gray", "Omar Khalid", "Liam Carter", "Sophia Turner", "Michael Hall", "Leah Adams", "Noah Kim", "Emma Lopez"};
-    String[] emails = {"reda@example.com", "maria.santos@example.com", "nina.patel@example.com", "david.brown@example.com", "julia.gray@example.com", "omar.khalid@example.com", "liam.carter@example.com", "sophia.turner@example.com", "michael.hall@example.com", "leah.adams@example.com", "noah.kim@example.com", "emma.lopez@example.com"};
+    String[] emails = {"admin@vala.com", "maria.santos@example.com", "nina.patel@example.com", "david.brown@example.com", "julia.gray@example.com", "omar.khalid@example.com", "liam.carter@example.com", "sophia.turner@example.com", "michael.hall@example.com", "leah.adams@example.com", "noah.kim@example.com", "emma.lopez@example.com"};
     String[] phones = {"+1-202-555-0173", "+1-202-555-0114", "+1-202-555-0135", "+1-202-555-0186", "+1-202-555-0127", "+1-202-555-0198", "+1-202-555-0149", "+1-202-555-0150", "+1-202-555-0151", "+1-202-555-0152", "+1-202-555-0153", "+1-202-555-0154"};
     boolean[] enabledFlags = {true, true, false, true, true, false, true, true, true, false, true, true};
 
     if (userRepository.count() == 0) {
       for (int i = 0; i < 12; i++) {
-        userRepository.save(User.builder()
-                .userName(userNames[i])
-                .fullName(fullNames[i])
-                .email(emails[i])
-                .phone(phones[i])
-                .password(passwordEncoder.encode(i == 0 ? "12345678" : "Pass@" + (1000 + i)))
-                .role(i == 0 ? Role.ADMIN : Role.USER)
-                .enabled(enabledFlags[i])
-                .build());
+        ensureUser(
+            userNames[i],
+            fullNames[i],
+            emails[i],
+            phones[i],
+            passwordEncoder.encode(i == 0 ? "12345678" : "Pass@" + (1000 + i)),
+            i == 0 ? Role.ADMIN : Role.USER,
+            enabledFlags[i]
+        );
       }
     } else {
-      userRepository.findByEmail("reda@example.com").ifPresentOrElse(
-        admin -> {
-          if (admin.getRole() != Role.ADMIN || admin.getEnabled() != Boolean.TRUE) {
-            admin.setRole(Role.ADMIN);
-            admin.setEnabled(true);
-            userRepository.save(admin);
-          }
-        },
-        () -> {
-          userRepository.save(User.builder()
-                  .userName("reda")
-                  .fullName("Reda")
-                  .email("reda@example.com")
-                  .phone("+1-202-555-0173")
-                  .password(passwordEncoder.encode("12345678"))
-                  .role(Role.ADMIN)
-                  .enabled(true)
-                  .build());
-        }
+      userRepository.findByEmail("admin@vala.com").ifPresentOrElse(
+          admin -> {
+            if (admin.getRole() != Role.ADMIN || admin.getEnabled() != Boolean.TRUE) {
+              admin.setRole(Role.ADMIN);
+              admin.setEnabled(true);
+              userRepository.save(admin);
+            }
+          },
+          () -> ensureUser(
+              "reda",
+              "Reda",
+              "admin@vala.com",
+              "+1-202-555-0173",
+              passwordEncoder.encode("12345678"),
+              Role.ADMIN,
+              true
+          )
       );
     }
     List<User> users = userRepository.findAll();
@@ -112,15 +146,15 @@ public class DataInitializer implements CommandLineRunner {
 
     if (hostingPlanRepository.count() == 0) {
       for (int i = 0; i < 12; i++) {
-        hostingPlanRepository.save(HostingPlan.builder()
-                .name(planNames[i])
-                .description(planDescriptions[i])
-                .price(realPrices[i])
-                .storage(storageValues[i])
-                .bandwidth(bandwidthValues[i])
-                .emailAccounts(emailAccounts[i])
-                .sslIncluded(sslIncluded[i])
-                .build());
+        ensureHostingPlan(
+            planNames[i],
+            planDescriptions[i],
+            realPrices[i],
+            storageValues[i],
+            bandwidthValues[i],
+            emailAccounts[i],
+            sslIncluded[i]
+        );
       }
     } else {
       // Auto-update existing dummy prices (< 100.0) in MySQL table to realistic values
