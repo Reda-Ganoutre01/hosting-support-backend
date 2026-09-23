@@ -1,0 +1,31 @@
+# Test configuration: overrides the MySQL datasource with an in-memory H2
+# database so the full JUnit suite can run without a MySQL server.
+spring:
+  datasource:
+    url: jdbc:h2:mem:hosting_support_testdb;MODE=MySQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:dGhpcyBpcyBhIHNlY3JldCBrZXkgZm9yIGp3dCB0b2tlbiBzaWduaW5n}
+    expiration-ms: 86400000
+
+server:
+  port: 0
+
+logging:
+  level:
+    org.hibernate.SQL: WARN
+    org.hibernate: WARN
+    org.springframework: WARN
+    org.springframework.security: WARN
