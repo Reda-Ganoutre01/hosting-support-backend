@@ -27,5 +27,3 @@ jobs:
 
       - name: Build and run tests
         run: ./mvnw -B verify
-        env:
-          JWT_SECRET: ${{ secrets.JWT_SECRET }}
