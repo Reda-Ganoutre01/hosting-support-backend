@@ -3,9 +3,9 @@ spring:
     name: hosting-support-backend
 
   datasource:
-    url: jdbc:mysql://localhost:3306/hosting_support_db
-    username: root
-    password:
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:hosting_support_db}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:}
 
   jpa:
     hibernate:
